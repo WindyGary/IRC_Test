@@ -6,10 +6,16 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.Drive;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.LiftArm;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.ExampleSubsystem;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -19,6 +25,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+
+    private Drivetrain drivetrain = new Drivetrain();
+    private Joystick leftJoystick = new Joystick(0);
+    private Joystick rightJoystick = new Joystick(1);
+    private Drive drive = new Drive(drivetrain, leftJoystick, rightJoystick);
+    private JoystickButton liftArmButton = new JoystickButton(leftJoystick, 1);
+    private JoystickButton dropArmButton = new JoystickButton(leftJoystick, 3);
+    private Arm arm = new Arm();
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
@@ -30,6 +44,8 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    drivetrain.setDefaultCommand(drive);
   }
 
   /**
@@ -42,6 +58,8 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+    liftArmButton.whileTrue(new LiftArm(arm, 0.5));
+    dropArmButton.whileTrue(new LiftArm(arm, -0.5));
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
